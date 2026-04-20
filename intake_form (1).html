@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Запазете час</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 2rem 1rem; }
+    .form-wrap { background: white; border-radius: 12px; padding: 2rem; max-width: 560px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; color: #111; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 2rem; }
+    .field { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #111; background: white; }
+    input:focus, select:focus { outline: none; border-color: #888; }
+    .radio-group { display: flex; gap: 16px; }
+    .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: 400; color: #111; cursor: pointer; margin: 0; }
+    .allergy-detail { margin-top: 10px; display: none; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 1.5rem 0; }
+    .submit-btn { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; background: #111; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 0.5rem; }
+    .submit-btn:hover { background: #333; }
+    .success { display: none; text-align: center; padding: 2rem 0; }
+    .success h2 { font-size: 20px; color: #111; margin-bottom: 8px; }
+    .success p { font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="form-wrap">
+    <h1>Запазете час</h1>
+    <p class="subtitle">Попълнете формата и ние ще се свържем с вас за потвърждение.</p>
+
+    <div id="form-content">
+      <div class="field">
+        <label>Пълно име *</label>
+        <input type="text" id="name" placeholder="Иван Иванов" />
+      </div>
+
+      <div class="field">
+        <label>Процедура, която ви интересува *</label>
+        <select id="treatment">
+          <option value="">— Изберете процедура —</option>
+          <option>Прегледи</option>
+          <option>Манипулации</option>
+          <option>Лазерни процедури</option>
+          <option>Естетични процедури</option>
+          <option>Процедури за лице</option>
+          <option>Процедури за тяло</option>
+          <option>Лазерна епилация</option>
+          <option>Козметични терапии</option>
+          <option>Дерматохирургия</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Първо посещение или връщащ се пациент? *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="visit_type" value="Първо посещение" /> Първо посещение</label>
+          <label><input type="radio" name="visit_type" value="Връщащ се пациент" /> Връщащ се пациент</label>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label>Имате ли алергии? *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="allergies" value="Не" onclick="toggleAllergy(false)" /> Не</label>
+          <label><input type="radio" name="allergies" value="Да" onclick="toggleAllergy(true)" /> Да</label>
+        </div>
+        <div class="allergy-detail" id="allergy-detail">
+          <label style="margin-top:10px;">Опишете алергиите си</label>
+          <input type="text" id="allergy-text" placeholder="напр. пеницилин, латекс..." />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label>Предпочитана дата и час *</label>
+        <input type="text" id="appointment_time" placeholder="напр. 15 април 14:00" />
+      </div>
+
+      <div class="field">
+        <label>Имейл адрес *</label>
+        <input type="email" id="email" placeholder="ivan@example.com" />
+      </div>
+
+      <div class="field">
+        <label>Телефонен номер *</label>
+        <input type="tel" id="phone" placeholder="+359 88 123 4567" />
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">Изпратете заявката</button>
+    </div>
+
+    <div class="success" id="success-msg">
+      <h2>Благодарим ви!</h2>
+      <p>Вашата заявка беше изпратена успешно. Ще се свържем с вас скоро за потвърждение на часа.</p>
+    </div>
+  </div>
+
+  <script>
+    function toggleAllergy(show) {
+      document.getElementById('allergy-detail').style.display = show ? 'block' : 'none';
+    }
+
+    async function submitForm() {
+      const name = document.getElementById('name').value.trim();
+      const treatment = document.getElementById('treatment').value;
+      const visit_type = document.querySelector('input[name="visit_type"]:checked')?.value;
+      const allergies_yn = document.querySelector('input[name="allergies"]:checked')?.value;
+      const allergy_text = document.getElementById('allergy-text').value.trim();
+      const appointment_time = document.getElementById('appointment_time').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!name || !treatment || !visit_type || !allergies_yn || !appointment_time || !email || !phone) {
+        alert('Моля, попълнете всички задължителни полета.');
+        return;
+      }
+
+      const allergies = allergies_yn === 'Да' ? (allergy_text || 'Да') : 'Не';
+
+      const payload = { name, treatment, experience: visit_type, allergies, appointment_time, email, phone };
+
+      try {
+        const response = await fetch('https://demo191.app.n8n.cloud/webhook/3579174a-2d49-4238-a725-07ac5eac1a76', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        console.log('Response:', response.status);
+      } catch(e) {
+        console.error('Error:', e);
+      }
+
+      document.getElementById('form-content').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
